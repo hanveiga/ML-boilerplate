@@ -8,7 +8,7 @@ from config import abs_dataset_folderpath, abs_output_data_folderpath
 
 
 class MLDataset(object):
-    """ Collection of Data objects"""
+    """ Collection of Data objects that are appropriate for the ML model"""
     def __init__(self,data,nfolds):
         self.inputs, self.outputs = self.preprocess_data(data)
         self.nfolds = nfolds
@@ -29,9 +29,8 @@ class MLDataset(object):
 
         return np.array(inputs), np.array(outputs)
 
-    def get_kth_fold(self,k):
+    def get_kth_fold(self,k=0):
         train_indices, test_indices = self.folds[k]
-        print(train_indices[:])
         train_input = self.inputs[train_indices]
         train_output = self.outputs[train_indices]
         test_input = self.inputs[test_indices]

@@ -31,7 +31,7 @@ def run(options):
     if options.action == 'optimize':
         model = BaselineModel()
         optimizer = Optimizer(BaselineModel, mldata)
-        optimizer.hyper_parameter_opt(10)
+        optimizer.hyper_parameter_opt()
         best_model = optimizer.best_model
 
     if options.action == 'predict':
