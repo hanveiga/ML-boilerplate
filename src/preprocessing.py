@@ -1,18 +1,48 @@
 import numpy as np
 import pickle
 import os
+from sklearn.model_selection import KFold
 from data import Dataset, Data
 
 from config import abs_dataset_folderpath, abs_output_data_folderpath
 
+
+class MLDataset(object):
+    """ Collection of Data objects"""
+    def __init__(self,data,nfolds):
+        self.inputs, self.outputs = self.preprocess_data(data)
+        self.nfolds = nfolds
+        self.nData = len(self.inputs)
+        self.kf = KFold(nfolds)
+        self.kf.get_n_splits(range(self.nData))
+        self.folds = list(self.kf.split(range(self.nData)))
+    
+    def preprocess_data(self, dataset):
+        inputs = []
+        outputs = []
+        for entry in dataset.records:
+            inp = np.zeros((1600,2))
+            inp[:,0] = entry.wavelength
+            inp[:,1] = entry.flux
+            inputs.append(inp)
+            outputs.append(entry.density)
+
+        return np.array(inputs), np.array(outputs)
+
+    def get_kth_fold(self,k):
+        train_indices, test_indices = self.folds[k]
+        print(train_indices[:])
+        train_input = self.inputs[train_indices]
+        train_output = self.outputs[train_indices]
+        test_input = self.inputs[test_indices]
+        test_output = self.outputs[test_indices]
+
+        return train_input, train_output, test_input, test_output
+
+
 def load_dataset(dataset_path):
     dataset = pickle.load(open(dataset_path,"rb"))
     return dataset
-
-def feature_engineering(dataset):
-    modified_dataset = Dataset()
-
-    pickle.dump(modified_dataset,open(os.path.join(os.path.join(parent_path, dataset_folderpath),"processed_dataset.pkl","wb")))
 
 def prepare_data_for_model(dataset):
     pass
